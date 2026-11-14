@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sky Maze Adventure - 3D Labyrinth Quest</title>
+  <meta name="description" content="A polished 3D maze adventure game. Explore labyrinths, dodge hazards, find keys, collect gold coins, and customize your avatars.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Game Main Canvas Container -->
+  <div id="game-container">
+    <canvas id="canvas3d"></canvas>
+    <canvas id="confetti-canvas"></canvas>
+  </div>
+
+  <!-- HUD Interface -->
+  <div id="hud">
+    <!-- Top HUD Row -->
+    <div class="hud-top">
+      <div class="hud-pill level-badge">
+        <span class="level-subtitle" id="hud-level-subtitle">Level 1 • Tutorial</span>
+        <span class="level-title" id="hud-level-title">Greenhorn Garden</span>
+      </div>
+
+      <div class="objective-banner" id="hud-objective-banner">
+        <span id="hud-objective-text">Find the Key 🗝️</span>
+      </div>
+
+      <div class="hud-top-right">
+        <!-- Coin Counter -->
+        <div class="hud-pill coin-counter" title="Total Banked Gold Coins">
+          <div class="coin-icon">★</div>
+          <span id="hud-coin-count">10</span>
+        </div>
+
+        <!-- HUD Action Buttons -->
+        <button class="hud-btn" id="hud-btn-shop" title="Avatar & Costume Shop">
+          <svg viewBox="0 0 24 24"><path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12zm-7-8c-1.66 0-3-1.34-3-3H7c0 2.76 2.24 5 5 5s5-2.24 5-5h-2c0 1.66-1.34 3-3 3z"/></svg>
+        </button>
+
+        <button class="hud-btn" id="hud-btn-restart" title="Restart Level (R)">
+          <svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        </button>
+
+        <button class="hud-btn" id="hud-btn-sound" title="Toggle Sound / Mute">
+          <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </button>
+
+        <button class="hud-btn" id="hud-btn-fullscreen" title="Toggle Fullscreen (F)">
+          <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        </button>
+
+        <button class="hud-btn" id="hud-btn-pause" title="Pause Menu (ESC)">
+          <svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+
+        <!-- Minimap Radar -->
+        <div class="minimap-container" title="Minimap Radar (M)">
+          <canvas id="minimap-canvas" width="140" height="140"></canvas>
+          <div class="minimap-compass">N</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Floating Notifications -->
+    <div class="center-notification" id="center-notification">
+      KEY ACQUIRED! Portal Unlocked! ✨
+    </div>
+
+    <!-- Bottom HUD Row -->
+    <div class="hud-bottom">
+      <div class="key-status-card">
+        <div class="key-icon-slot" id="hud-key-slot">🗝️</div>
+        <div>
+          <div class="key-desc-title">Portal Key</div>
+          <div class="key-desc-status" id="hud-key-status">Not Found</div>
+        </div>
+      </div>
+
+      <div class="controls-hint">
+        <span><kbd>WASD</kbd> / <kbd>↑←↓→</kbd> Move</span>
+        <span><kbd>Space</kbd> Jump</span>
+        <span><kbd>Shift</kbd> Sprint</span>
+        <span><kbd>Q</kbd><kbd>E</kbd> / Drag Turn</span>
+        <span><kbd>F</kbd> Fullscreen</span>
+        <span><kbd>Esc</kbd> Pause</span>
+        <span><kbd>R</kbd> Restart</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Touch Virtual Controls -->
+  <div class="mobile-controls" id="mobile-controls">
+    <div class="joystick-zone" id="joystick-zone">
+      <div class="joystick-knob" id="joystick-knob"></div>
+    </div>
+    <div class="action-buttons">
+      <button class="touch-btn" id="touch-jump-btn">JUMP</button>
+    </div>
+  </div>
+
+  <!-- Pause Menu Modal -->
+  <div class="modal-overlay" id="pause-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-subtitle">Game Paused</div>
+        <div class="modal-title">Sky Maze Adventure</div>
+      </div>
+
+      <!-- Audio Settings -->
+      <div class="setting-row">
+        <span class="setting-label">Music Volume</span>
+        <div class="slider-container">
+          <input type="range" class="setting-slider" id="music-vol-slider" min="0" max="1" step="0.05" value="0.5">
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <span class="setting-label">Sound Effects</span>
+        <div class="slider-container">
+          <input type="range" class="setting-slider" id="sfx-vol-slider" min="0" max="1" step="0.05" value="0.7">
+        </div>
+      </div>
+
+      <!-- Level Selector -->
+      <div class="setting-row">
+        <span class="setting-label">Jump to Level</span>
+        <div class="slider-container">
+          <select id="pause-level-select" style="background: #334155; color: #fff; border: 1px solid var(--card-border); padding: 6px 12px; border-radius: 6px; font-weight: 700; outline: none; cursor: pointer;">
+            <option value="1">Level 1: Greenhorn Garden</option>
+            <option value="2">Level 2: Azure Corridors</option>
+            <option value="3">Level 3: Sunlit Sanctum</option>
+            <option value="4">Level 4: Sentinel Vault</option>
+            <option value="5">Level 5: Royal Citadel</option>
+            <option value="6">Level 6: Crystal Caverns</option>
+            <option value="7">Level 7: Inferno Chamber</option>
+            <option value="8">Level 8: Clockwork Maze</option>
+            <option value="9">Level 9: Shadow Sanctum</option>
+            <option value="10">Level 10: Master's Gauntlet</option>
+            <option value="11">Level 11+: Infinite Labyrinth</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="pause-btn-resume">Resume Game</button>
+        <button class="btn btn-secondary" id="pause-btn-fullscreen">⛶ Fullscreen</button>
+        <button class="btn btn-gold" id="pause-btn-shop">Avatar & Costume Shop</button>
+        <button class="btn btn-secondary" id="pause-btn-restart">Restart Level</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avatar & Costume Shop Modal -->
+  <div class="modal-overlay" id="shop-modal">
+    <div class="modal-card modal-shop">
+      <button class="modal-close-btn" id="shop-close-btn">&times;</button>
+      <div class="modal-header">
+        <div class="modal-subtitle">Customization Vault</div>
+        <div class="modal-title">Avatar & Costume Shop</div>
+      </div>
+
+      <div class="shop-container">
+        <!-- 3D Character Interactive Preview Box -->
+        <div class="shop-preview-box">
+          <div class="shop-preview-badge">3D Preview</div>
+          <canvas id="shop-preview-canvas"></canvas>
+          <div class="shop-preview-rotate-hint">Drag to rotate character 360°</div>
+        </div>
+
+        <!-- Shop Right Column: Tabs & Catalog Grid -->
+        <div>
+          <!-- Tab Navigation -->
+          <div class="shop-tabs">
+            <button class="shop-tab-btn active" id="shop-tab-avatars">Avatars (10)</button>
+            <button class="shop-tab-btn" id="shop-tab-costumes">Costumes & Colors (8)</button>
+          </div>
+
+          <!-- Items Grid -->
+          <div class="shop-grid" id="shop-items-grid">
+            <!-- Dynamically populated by shop.js -->
+          </div>
+
+          <!-- Selected Item Details & Action -->
+          <div style="margin-top: 16px; background: rgba(15,23,42,0.6); padding: 12px 16px; border-radius: 10px; border: 1px solid var(--card-border);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span id="shop-preview-name" style="font-weight: 800; font-size: 16px; color: #fff;">Astro Scout</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; color: var(--text-muted);">Bank:</span>
+                <span style="font-size: 15px; font-weight: 800; color: var(--gold-light);">🪙 <span id="shop-coin-balance">10</span></span>
+              </div>
+            </div>
+            <p id="shop-preview-desc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Brave cosmic explorer equipped with high-tech helmet and thrusters.</p>
+
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-primary" id="shop-action-btn" style="flex: 1;">Equipped</button>
+              <button class="btn btn-secondary" id="shop-bonus-coins" style="width: auto; font-size: 13px; padding: 10px 14px;" title="Test button for easy purchasing">+50 Coins</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level Complete Victory Modal -->
+  <div class="modal-overlay" id="victory-modal">
+    <div class="modal-card victory-card">
+      <div class="modal-header">
+        <div class="modal-subtitle">Victory!</div>
+        <div class="modal-title">Level Completed!</div>
+      </div>
+
+      <!-- 3 Star Rating Display -->
+      <div class="victory-stars" id="victory-stars-box">
+        <span class="star-icon filled">★</span>
+        <span class="star-icon filled">★</span>
+        <span class="star-icon filled">★</span>
+      </div>
+
+      <!-- Stats Summary -->
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Time Taken</span>
+          <span class="stat-val" id="victory-stat-time">0:45</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Coins Found</span>
+          <span class="stat-val" id="victory-stat-coins">15 / 15</span>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" id="victory-btn-next">Next Level ➔</button>
+        <button class="btn btn-secondary" id="victory-btn-replay">Replay Level</button>
+        <button class="btn btn-gold" id="victory-btn-shop">Open Shop 🛍️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="lib/three.min.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/maze.js"></script>
+  <script src="js/hazards.js"></script>
+  <script src="js/items.js"></script>
+  <script src="js/shop.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+</html>

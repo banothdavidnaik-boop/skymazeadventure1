@@ -1,0 +1,12 @@
+# Temporary & cache files
+-C
+site_deploy.zip
+temp_profile/
+*.dmp
+*.log
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
