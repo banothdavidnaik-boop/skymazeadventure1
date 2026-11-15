@@ -2,6 +2,26 @@
 
 A polished, single-player 3D maze adventure game built with Three.js and the Web Audio API. Explore intricate labyrinths, dodge hazards, find magic keys, collect persistent gold coins, unlock new avatars and costumes in the shop, and reach the exit portal to conquer each level.
 
+🌐 **Play Online directly in your browser**: [https://banothdavidnaik-boop.github.io/skymazeadventure1/](https://banothdavidnaik-boop.github.io/skymazeadventure1/)
+
+---
+
+## 🎬 Gameplay Trailer & Screenshots
+
+🎬 **Official Trailer Video**: [trailer.mp4](trailer.mp4) (H.264 60/30fps HD) | [trailer.webm](trailer.webm)
+
+| 3D Labyrinth Exploration | Fluid Movement & Hazard Dodge |
+| :---: | :---: |
+| ![Maze Exploration](screenshots/screenshot_1_maze_exploration.png) | ![Player Action](screenshots/screenshot_2_player_action.png) |
+
+| Magic Key & Portal Ignition | 3D Avatar Customizer & Vault |
+| :---: | :---: |
+| ![Key & Portal](screenshots/screenshot_3_key_and_portal.png) | ![Avatar Shop](screenshots/screenshot_4_avatar_customizer.png) |
+
+| 3-Star Level Victory Celebration |
+| :---: |
+| ![Victory Celebration](screenshots/screenshot_5_victory_celebration.png) |
+
 ---
 
 ## 🎮 How to Play
